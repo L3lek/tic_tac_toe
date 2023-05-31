@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/Tic_Tac_Toe.dir/src/main.cpp.o CMakeFiles/Tic_Tac_Toe.dir/src/board.cpp.o CMakeFiles/Tic_Tac_Toe.dir/src/ai.cpp.o -o Tic_Tac_Toe 
