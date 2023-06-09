@@ -2,11 +2,14 @@
 #include "ai.h"
 
 #include <iostream>
+#include <string>
+#include <vector>
 
 Board make_board(){
 int size, to_win;
 char pl_symbol, start;
-bool turn;
+
+
 std::cout <<"+"<< std::string(30,'-')<<"+"<<std::endl;
 std::cout << "| Ustawienia rozmiaru planszy: |"<<std::endl;
 std::cout <<"+"<< std::string(30,'-')<<"+"<<std::endl;
@@ -41,9 +44,9 @@ do{
 		std::cout << "Proszę wpisać 'x' lub 'o'.\n";
 }while(!(pl_symbol =='x'||pl_symbol=='o'));
 
-
 Board tic_tac_toe(size, to_win, pl_symbol);
 return tic_tac_toe;
+
 }
 
 ai make_ai(){
@@ -58,23 +61,8 @@ ai make_ai(){
 	return Ai;
 }
 
-
-int main(){
-	Board table=make_board();
-	ai Ai=make_ai();
-
-	int max_moves = table.get_size();
-
-	table.reset();
-	table.print();       
-
-    
-	while(table.game_result()==0 && !table.full_board()){
-
-		if(table.player_turn()){
-			int x,y;
-			std::cout << "Twój ruch.\n";
-		
+std::vector<int> pl_choise(Board table){
+	int x,y;
 			do{
 				do{
 					std::cout << "Wybierz x z przedziału (1, " << table.get_size() << ")\n";
@@ -85,22 +73,120 @@ int main(){
 					std::cout << std::endl;
 
 				}while(x<1 || x>table.get_size() || y<1 || y>table.get_size());
-				if(table.occupied(x,y)|| x < 1 || x > max_moves || y < 1 || y > max_moves){
+				if(table.occupied(x,y)|| x < 1 || x > table.get_size() || y < 1 || y > table.get_size()){
 					std::cout <<"Wybrane pole (" <<x << "," <<y <<") jest zajęte. Wybierz inne pole!\n";
 				}
 			}while (table.occupied(x,y));
-			table.set(x,y);
+	std::vector<int> coords;
+	coords.push_back(x);
+	coords.push_back(y);
+	return coords;
+}
+
+void win_condition(Board table){
+if (table.full_board() && table.game_result() == 0)
+    std::cout << "remis!\n";
+else if (table.game_result() != 0) {
+	std::cout << "koniec gry! wygrywa ";
+	if (!table.player_turn())
+		std::cout << "gracz (" << table.get_pl_symbol() << ")\n";
+	else
+		std::cout << "komputer (" << table.get_ai_symbol() << ")\n";
+	}
+	std::cout << '\n';
+}
+
+void game_ai(Board table){
+	std::string turn_choise;
+	std::vector<int> coords;
+
+	ai Ai=make_ai();
+
+	do{
+	std::cout << "Kto zaczyna? Pl - gracz/ Ai - komputer. ";
+	std::cin >> turn_choise;
+	if(turn_choise =="Pl" || turn_choise =="PL"|| turn_choise =="pl"|| turn_choise =="pL")
+		table.set_turn(1);
+	else if(turn_choise =="Ai" || turn_choise =="AI"|| turn_choise =="ai"|| turn_choise =="aI")
+		table.set_turn(0);
+	else
+		std::cout << "Wpisano nieprawidłowy wybór. Wpisz \"Ai\" lub \"Pl\"\n";
+	}while(!((turn_choise =="Pl" || turn_choise =="PL"|| turn_choise =="pl"|| turn_choise =="pL" || turn_choise =="Ai" || turn_choise =="AI"|| turn_choise =="ai"|| turn_choise =="aI")));
+
+	table.reset();
+	table.print();       
+
+    
+	while(table.game_result()==0 && !table.full_board()){
+
+		if(table.player_turn()){
+			
+			std::cout << "Twój ruch.\n";
+			coords=pl_choise(table);
+			table.set(coords[0],coords[1]);
             table.change_turn(0);
-		}else{
-            std::cout << "komputer wykonuje ruch... \n";
-            Ai.move(table);
-			table.set(Ai.getx(),Ai.gety());
-            table.change_turn(1);
-        }
+		}else {
+                std::cout << "komputer wykonuje ruch... \n";
+                Ai.move(table);
+                table.set(Ai.getx(), Ai.gety());
+                table.change_turn(1);
+            }
 
         table.print();
-		
-		
-	}
-	std::cout << "Brawo wygrałeś!!" <<std::endl;
+
+		win_condition(table);
+        }
+
+}
+
+void game_2pl(Board table){
+	std::vector<int> coords;
+
+	table.set_turn(1);
+
+	table.reset();
+	table.print();       
+
+    
+	while(table.game_result()==0 && !table.full_board()){
+
+		if(table.player_turn()){
+			
+			std::cout << "Gracz 1.\n";
+			coords=pl_choise(table);
+			table.set(coords[0],coords[1]);
+            table.change_turn(0);
+		}else {
+            std::cout << "Gracz 2.\n";
+			coords=pl_choise(table);
+			table.set(coords[0],coords[1]);
+            table.change_turn(1);
+            }
+
+        table.print();
+
+		win_condition(table);
+        }
+}
+
+
+int main(){
+	Board table=make_board();
+	int choise;
+
+	do{
+		std::cout<<"\nWybierz tryb gry: \n 1. Gracz vs Gracz.\n 2. Gracz vs Komputer.\n";
+		std::cin >> choise;
+		if(choise!=1 && choise != 2){
+			std::cout << "Wybrano złą opcję.\n";
+		}
+	}while (choise!=1 && choise !=2);
+	
+	std::cout<<std::endl;
+		if(choise==1){
+			game_2pl(table);
+		}else if(choise==2){
+			game_ai(table);
+	
+		}
 }

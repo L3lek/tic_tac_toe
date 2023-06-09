@@ -20,8 +20,6 @@ if(player=='x'){
 }else{
 	pl_symbol='x';
 	ai_symbol='o';
-
-turn=1;
 }
 }
 
@@ -77,7 +75,7 @@ void Board::print() const{
 
 void Board::set(int x, int y) {
     if (x >= 1 && x <= size && y >= 1 && y <= size) {
-        if (this->player_turn())
+        if (player_turn())
             area[x - 1][y - 1] = pl_symbol;
         else
             area[x - 1][y - 1] = ai_symbol;

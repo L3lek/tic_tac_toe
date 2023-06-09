@@ -11,6 +11,7 @@ class Board{
 	public:
 	Board(){};
 	Board(int size, int max_row, char player);
+	void change_turn(bool player){player ? turn =1 : turn=0;}
 	void print() const;
 	void set(int x, int y);
 	void remove(int x, int y);
@@ -20,7 +21,8 @@ class Board{
 	bool full_board();
 	bool occupied(int x, int y);
 	bool player_turn(){return turn;}
-	void change_turn(bool player){player ? turn = 1 : turn = 0; }
-
+	char get_pl_symbol(){return pl_symbol;}
+	char get_ai_symbol(){return ai_symbol;}
+	void set_turn(bool whose_turn){turn = whose_turn;}
 
 };
